@@ -1,0 +1,29 @@
+{
+  "name": "r16-lr1e-4",
+  "backend": "hf",
+  "mode": "zero",
+  "adapter": "runs\\r16-lr1e-4\\adapter",
+  "model": null,
+  "n": 99,
+  "json_valid": 1.0,
+  "schema_valid": 0.9494949494949495,
+  "exact_match": 0.5353535353535354,
+  "fact_precision": 0.9639368895567243,
+  "fact_recall": 0.9617691154422788,
+  "fact_f1": 0.9628517823639775,
+  "field_accuracy": {
+    "title": 0.98989898989899,
+    "company": 0.9595959595959596,
+    "location": 1.0,
+    "work_mode": 0.9595959595959596,
+    "employment_type": 0.9393939393939394,
+    "seniority": 0.8787878787878788,
+    "salary": 0.9494949494949495,
+    "experience_years_min": 1.0,
+    "skills": 0.7676767676767676
+  },
+  "latency_ms_p50": null,
+  "latency_ms_p95": null,
+  "throughput_per_s": 1.59,
+  "peak_vram_gb": 3.3
+}
