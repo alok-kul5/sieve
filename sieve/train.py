@@ -72,8 +72,8 @@ def main() -> None:
     ap.add_argument("--alpha", type=int, default=0, help="default 2*rank")
     ap.add_argument("--lr", type=float, default=2e-4)
     ap.add_argument("--epochs", type=float, default=2)
-    ap.add_argument("--batch", type=int, default=2)
-    ap.add_argument("--accum", type=int, default=8)
+    ap.add_argument("--batch", type=int, default=1)
+    ap.add_argument("--accum", type=int, default=16)
     ap.add_argument("--max_len", type=int, default=768)
     ap.add_argument("--train", default="data/train.jsonl")
     ap.add_argument("--val", default="data/val.jsonl")
@@ -105,7 +105,7 @@ def main() -> None:
         output_dir=str(out / "ckpt"), num_train_epochs=args.epochs, learning_rate=args.lr,
         per_device_train_batch_size=args.batch, per_device_eval_batch_size=args.batch,
         gradient_accumulation_steps=args.accum, lr_scheduler_type="cosine", warmup_steps=warmup,
-        logging_steps=5, eval_strategy="steps", eval_steps=20, save_strategy="steps", save_steps=20, save_total_limit=1, bf16=True,
+        logging_steps=5, eval_strategy="steps", eval_steps=22, save_strategy="steps", save_steps=10, save_total_limit=1, bf16=True,
         optim="paged_adamw_8bit", report_to=["tensorboard"],
         dataloader_num_workers=0, seed=42, remove_unused_columns=False,
     )
