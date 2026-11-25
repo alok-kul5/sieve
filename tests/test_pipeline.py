@@ -61,7 +61,8 @@ def test_filter_accepts_clean_and_rejects_drift():
     assert reject_reason(_raw(good.replace("Airflow", "Airflow and Docker"), spec)) == "stray:skills"
     assert reject_reason(_raw(good.replace("$150k - $180k per year", "great pay"), spec)) == "missing:salary"
     assert reject_reason(_raw(good.replace("fully remote", "hybrid"), spec)) == "mismatch:work_mode"
-    assert reject_reason(_raw(good + " Ten years of history!", spec)) == "stray:experience"
+    assert reject_reason(_raw(good + " Ten years of history!", spec)) == "missing:experience"  # 10 != 5
+    assert reject_reason(_raw(good.replace("5+ years", "five+ years"), spec)) is None  # paraphrase, same value
 
 
 def test_skill_matching_uses_word_boundaries():

@@ -23,7 +23,9 @@ MONEY_RE = re.compile(r"[$€£₹]|\b(?:USD|EUR|GBP|INR|AUD|CAD|SGD|LPA|lakhs?|
                       re.IGNORECASE)
 YEARS_RE = re.compile(r"\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\+?\s*(?:-\s*\d+\s*)?(?:years?|yrs?)\b",
                       re.IGNORECASE)
-MODE_RE = re.compile(r"\b(remote|hybrid|on-?site|in-office|office-based|wfh|work from (?:home|anywhere))\b", re.IGNORECASE)
+WORD_NUM = {w: str(i) for i, w in enumerate(["zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
+                                                "nine", "ten"])}
+MODE_RE =re.compile(r"\b(remote|hybrid|on-?site|in-office|office-based|wfh|work from (?:home|anywhere))\b", re.IGNORECASE)
 EMPLOY_RE = re.compile(r"\b(full[- ]?time|part[- ]?time|contract|freelance|permanent|internship|fte)\b", re.IGNORECASE)
 
 
@@ -94,9 +96,16 @@ def reject_reason(rec: dict[str, Any]) -> str | None:
     if words < 25 or words > 260:
         return "length"
     # facts whose exact value matters must appear verbatim
-    for key in ("title", "company", "location", "experience"):
+    for key in ("title", "company", "location"):
         if s.get(key) and not contains(text, s[key]):
             return f"missing:{key}"
+    # every "N years" mention must agree with the label; at least one if the label has a value
+    years = [WORD_NUM.get(m.group(1).lower(), m.group(1)) for m in YEARS_RE.finditer(norm(text))]
+    want_years = lab["experience_years_min"]
+    if want_years is None and years:
+        return "stray:experience"
+    if want_years is not None and (not years or any(int(y) != want_years for y in years)):
+        return "missing:experience"
     if s.get("salary") and not salary_ok(text, s["salary"], lab["salary"]["period"]):
         return "missing:salary"
     nt = norm(text)
@@ -108,13 +117,11 @@ def reject_reason(rec: dict[str, Any]) -> str | None:
                                              {"internship": {"full_time", "part_time"}}):
         return "mismatch:employment_type"
     t = nt
-    for key in ("title", "company", "location", "experience"):
+    for key in ("title", "company", "location"):
         if s.get(key):  # blank out required strings before checking for stray facts
             t = t.replace(norm(s[key]), " ")
     if not s.get("salary") and MONEY_RE.search(t):
         return "stray:salary"
-    if YEARS_RE.search(t):
-        return "stray:experience"
     if not lab["work_mode"] and MODE_RE.search(t):
         return "stray:work_mode"
     if not lab["employment_type"] and not title_intern and EMPLOY_RE.search(t):
