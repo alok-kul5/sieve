@@ -152,7 +152,7 @@ $env:SIEVE_BACKEND = "ollama"; uvicorn app.server:app --port 8017
 ```
 
 The base and writer models download from Hugging Face into `models/` (git-ignored). Weights, checkpoints and
-GGUF files never go into git; the LoRA adapter is attached to the GitHub release.
+GGUF files never go into git; the LoRA adapter (138 MB) is attached to the [v0.1.0 release](https://github.com/alok-kul5/sieve/releases/tag/v0.1.0).
 
 ## Tests and CI
 
