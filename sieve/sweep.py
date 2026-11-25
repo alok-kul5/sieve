@@ -14,7 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-GRID = [(8, 2e-4), (16, 2e-4), (16, 1e-4), (32, 2e-4)]
+GRID = [(8, 2e-4), (16, 2e-4), (16, 1e-4)]
 
 
 def sh(args: list[str]) -> None:
