@@ -26,7 +26,7 @@ function heroLoop() {
     row.className = "kv";
     row.innerHTML = `<b>${k}</b><span>${v}</span>`;
     sorted.appendChild(row);
-    while (sorted.children.length > 5) sorted.firstChild.remove();
+    while (sorted.children.length > 4) sorted.firstChild.remove();
   };
   for (let n = 0; n < 4; n++) setTimeout(drop, n * 250);
   setInterval(drop, 520);

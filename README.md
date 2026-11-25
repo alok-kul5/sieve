@@ -4,7 +4,9 @@
 GPU, that turns recruiter emails, Slack pings and LinkedIn hype into one schema-valid record. It ships as a
 q4_K_M GGUF in Ollama and comes with an eval harness that compares it against prompting.
 
-![Sieve demo](docs/demo.png)
+![Sieve demo: base vs fine-tuned on the same post](docs/demo.jpg)
+
+![Hero](docs/hero.jpg)
 
 ## Why fine-tune, not prompt
 
@@ -13,7 +15,53 @@ Extraction like this looks easy until you need **conventions**, not just facts. 
 and a title with no marker means `mid`. A missing company is `null`, not a guess. A small model can be told all of
 that in the prompt, and it still won't follow it reliably. A few hundred examples teach it.
 
-<!-- RESULTS -->
+## Results
+
+199 held-out test posts. Same system prompt for every row, greedy decoding, no constrained decoding.
+
+| Model | Exact match | Field F1 | Valid JSON (schema) | p50 latency | Throughput | Peak VRAM |
+|---|---:|---:|---:|---:|---:|---:|
+| Qwen2.5-1.5B-Instruct, zero-shot | 12.1% | 84.7% | 52.8% | 4.38 s | 1.39/s | 3.3 GB |
+| Qwen2.5-1.5B-Instruct, 3-shot | 5.5% | 82.7% | 44.7% | 5.43 s | 0.75/s | 3.4 GB |
+| Qwen2.5-7B-Instruct q4 (Ollama), zero-shot | 28.6% | 91.3% | 84.9% | 4.16 s | 0.25/s | 4.4 GB |
+| Qwen2.5-7B-Instruct q4 (Ollama), 3-shot | 28.6% | 92.3% | 89.4% | 3.85 s | 0.26/s | 4.4 GB |
+| **Sieve: 1.5B + LoRA (bf16)** | 92.0% | 99.5% | 99.5% | 4.49 s | 1.72/s | 3.3 GB |
+| **Sieve GGUF f16 (Ollama)** | 92.0% | 99.5% | 99.5% | 3.26 s | 0.31/s | 3.0 GB |
+| **Sieve GGUF q8_0 (Ollama)** | 92.0% | 99.5% | 99.5% | 2.79 s | 0.36/s | 1.7 GB |
+| **Sieve GGUF q4_K_M (Ollama)** | 90.5% | 99.3% | 99.5% | 2.64 s | 0.38/s | 1.1 GB |
+
+- **Fine-tuning takes exact match from 12.1% to 92.0%** on the same 1.5B weights. That beats a 5x larger
+  model (Qwen2.5-7B, 28.6%) prompted with the same instructions and 3 examples.
+- **Quantisation is almost free.** f16 and q8_0 GGUF in Ollama match the bf16 model on every metric. q4_K_M
+  loses 1.5 points of exact match (3 posts out of 199), keeps 99.3% field F1, and needs 1.1 GB instead of 3.3 GB.
+- **Few-shot hurts the small base model** (12.1% → 5.5%). The extra ~870 tokens of examples make it copy
+  surface forms ("permanent", "null" as a string) more often, not less.
+- The prompted models fail on exactly the conventions: `seniority` (55% → 99%), `salary` normalisation
+  (59% → 100%) and canonical `skills` (47% → 95%).
+
+<details><summary>Per-field accuracy</summary>
+
+| Field accuracy | base-zero | base-few | qwen7b-zero | qwen7b-few | finetuned | gguf-f16 | gguf-q8_0 | gguf-q4_k_m |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `title` | 97.5% | 97.0% | 99.0% | 98.5% | 98.5% | 98.5% | 98.5% | 98.5% |
+| `company` | 83.4% | 87.4% | 97.5% | 96.5% | 100.0% | 99.5% | 99.5% | 97.5% |
+| `location` | 97.5% | 97.0% | 98.5% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| `work_mode` | 82.4% | 80.4% | 92.5% | 87.4% | 99.0% | 99.0% | 99.0% | 99.0% |
+| `employment_type` | 78.9% | 69.8% | 87.4% | 86.9% | 99.5% | 100.0% | 100.0% | 100.0% |
+| `seniority` | 55.3% | 55.3% | 68.8% | 79.4% | 99.0% | 99.0% | 99.0% | 99.0% |
+| `salary` | 59.3% | 66.3% | 91.5% | 92.0% | 100.0% | 100.0% | 100.0% | 99.5% |
+| `experience_years_min` | 98.5% | 98.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| `skills` | 47.2% | 40.2% | 50.8% | 55.3% | 95.0% | 95.0% | 95.0% | 95.5% |
+
+</details>
+
+Exact match means all 9 fields equal the label. Field F1 is micro F1 over atomic facts (each non-null field,
+salary sub-field and skill). Valid JSON means the reply parses *and* passes the JSON Schema in
+`sieve/schema.py`. Latency is p50 over 20 single requests after a warm-up, on an RTX 5050 Laptop GPU
+that other jobs were also using. VRAM is peak allocated memory for the transformers rows and resident model size
+for the Ollama rows.
+
+![The results board in the demo](docs/board.jpg)
 
 ## Pipeline
 
@@ -47,7 +95,25 @@ flowchart LR
 5. **Demo** (`app/`). FastAPI and a static page. The same post goes to both models side by side, scored field
    by field when the post comes from the test set.
 
-<!-- SWEEP -->
+## Hyperparameter sweep
+
+LoRA rank x learning rate, 1 epoch each on the 700 training posts, then the winner for 2 epochs. Scored on the
+99-post validation split. Alpha = 2 x rank, dropout 0.05, effective batch 16, max length 768.
+
+| Run | LoRA rank | LR | Epochs | Trainable params | Val loss | Val exact match | Val field F1 | Val valid JSON | Peak train VRAM |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| r16-lr1e-4 | 16 | 1e-04 | 1 | 18.5M | 0.0184 | 53.5% | 96.3% | 94.9% | 2.53 GB |
+| r8-lr2e-4 | 8 | 2e-04 | 1 | 9.2M | 0.0165 | 60.6% | 97.1% | 94.9% | 2.47 GB |
+| r16-lr2e-4 | 16 | 2e-04 | 1 | 18.5M | 0.0126 | 74.7% | 98.3% | 97.0% | 2.53 GB |
+| r32-lr2e-4 | 32 | 2e-04 | 1 | 36.9M | 0.0090 | 76.8% | 98.6% | 100.0% | 2.71 GB |
+| r32-lr2e-4-ep2 | 32 | 2e-04 | 2 | 36.9M | 0.0065 | 91.9% | 99.5% | 99.0% | 2.71 GB |
+
+![Training and validation loss](docs/loss.png)
+
+Higher rank and the higher learning rate both helped, and the second epoch was worth another 15 points of
+exact match. Training peaks at **2.7 GB of VRAM**: the 1.5B base sits in NF4, and batch 1 x 16 accumulation
+keeps the 151k-vocabulary logits small. On the shared GPU a 1-epoch run took about 11 minutes and the 2-epoch run 34.
+TensorBoard logs are written to `runs/<name>/tb`.
 
 ## Setup
 
