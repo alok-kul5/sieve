@@ -18,3 +18,10 @@ ignore = ["E402", "E731", "E501", "B905"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["sieve", "app"]
