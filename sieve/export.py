@@ -5,7 +5,7 @@
 Steps:
   1. base (bf16) + adapter -> merged HF checkpoint        export/merged/
   2. llama.cpp convert_hf_to_gguf.py -> f16 GGUF          export/sieve-f16.gguf
-  3. `ollama create -q <quant>` from a Modelfile          sieve:f16, sieve:q8_0, sieve:q4_k_m
+  3. llama-quantize -> q8_0 / q4_K_M GGUF, then `ollama create` from a Modelfile for each
 """
 from __future__ import annotations
 
@@ -59,15 +59,27 @@ def to_gguf(merged: Path, out: Path) -> None:
                     "--outtype", "f16"], check=True, env=env)
 
 
-def ollama_create(gguf: Path, tags: list[str], name: str) -> None:
-    mf = gguf.parent / "Modelfile"
-    mf.write_text(MODELFILE.format(gguf=gguf.resolve().as_posix(), system=SYSTEM), encoding="utf-8")
+def quantize(f16: Path, tag: str) -> Path:
+    """llama.cpp's llama-quantize (build: cmake --build third_party/llama.cpp/build --target llama-quantize)."""
+    if tag == "f16":
+        return f16
+    exe = next((LLAMA_CPP / "build" / "bin").glob("llama-quantize*"))
+    out = f16.with_name(f16.name.replace("-f16", f"-{tag.lower()}"))
+    extra = os.environ.get("LLAMA_RUNTIME_PATH", r"C:\msys64\ucrt64\bin")  # gcc runtime DLLs on Windows
+    env = {**os.environ, "PATH": extra + os.pathsep + os.environ.get("PATH", "")}
+    subprocess.run([str(exe), str(f16), str(out), tag], check=True, env=env)
+    return out
+
+
+def ollama_create(f16: Path, tags: list[str], name: str) -> None:
     for tag in tags:
+        gguf = quantize(f16, tag)
+        mf = gguf.with_suffix(".Modelfile")
+        mf.write_text(MODELFILE.format(gguf=gguf.resolve().as_posix(), system=SYSTEM), encoding="utf-8")
         cmd = ["ollama", "create", f"{name}:{tag.lower()}", "-f", str(mf)]
-        if tag != "f16":
-            cmd += ["--quantize", tag]
         print(" ".join(cmd), flush=True)
         subprocess.run(cmd, check=True)
+        print(f"{gguf.name}: {gguf.stat().st_size / 2**30:.2f} GB", flush=True)
 
 
 def main() -> None:

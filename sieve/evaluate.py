@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import random
 import statistics
@@ -121,6 +122,8 @@ def mock_backend(rows: list[dict]):
 def evaluate(run: Callable, rows: list[dict], shots: list[dict], latency_n: int) -> tuple[list[str], dict]:
     prompts = [messages(r["text"], shots) for r in rows]
     lat = []
+    if latency_n:
+        run(prompts[:1])  # warm-up: load weights / build kernels outside the timed region
     for p in prompts[:latency_n]:  # single-request latency, as a user of the API would see it
         t = time.perf_counter()
         run([p])
@@ -129,7 +132,7 @@ def evaluate(run: Callable, rows: list[dict], shots: list[dict], latency_n: int)
     outs = run(prompts)
     total = time.perf_counter() - t0
     timing = {"latency_ms_p50": round(statistics.median(lat), 1) if lat else None,
-              "latency_ms_p95": round(sorted(lat)[int(0.95 * (len(lat) - 1))], 1) if lat else None,
+              "latency_ms_p95": round(sorted(lat)[max(0, math.ceil(0.95 * len(lat)) - 1)], 1) if lat else None,
               "throughput_per_s": round(len(rows) / total, 2) if total else None}
     return outs, timing
 
