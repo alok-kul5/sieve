@@ -17,14 +17,14 @@ import os
 import random
 import statistics
 import time
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
 
-from .metrics import score  # noqa: E402
-from .prompts import messages  # noqa: E402
-from .schema import dumps  # noqa: E402
+from .metrics import score
+from .prompts import messages
+from .schema import dumps
 
 FEW_SHOT_IDS = 3
 

@@ -20,11 +20,11 @@ from .synth import SKILLS
 
 DASHES = dict.fromkeys(map(ord, "‐‑‒–—−"), "-")
 MONEY_RE = re.compile(r"[$€£₹]|\b(?:USD|EUR|GBP|INR|AUD|CAD|SGD|LPA|lakhs?|per annum|salary|stipend)\b|\d+\s?k\b",
-                      re.I)
+                      re.IGNORECASE)
 YEARS_RE = re.compile(r"\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\+?\s*(?:-\s*\d+\s*)?(?:years?|yrs?)\b",
-                      re.I)
-MODE_RE = re.compile(r"\b(remote|hybrid|on-?site|in-office|office-based|wfh|work from (?:home|anywhere))\b", re.I)
-EMPLOY_RE = re.compile(r"\b(full[- ]?time|part[- ]?time|contract|freelance|permanent|internship|fte)\b", re.I)
+                      re.IGNORECASE)
+MODE_RE = re.compile(r"\b(remote|hybrid|on-?site|in-office|office-based|wfh|work from (?:home|anywhere))\b", re.IGNORECASE)
+EMPLOY_RE = re.compile(r"\b(full[- ]?time|part[- ]?time|contract|freelance|permanent|internship|fte)\b", re.IGNORECASE)
 
 
 def norm(text: str) -> str:
@@ -49,32 +49,32 @@ def mentioned_skills(text: str) -> set[str]:
 
 
 MODE_CUES = {
-    "remote": re.compile(r"\b(remote|wfh|work from (?:home|anywhere)|home-based)\b", re.I),
-    "hybrid": re.compile(r"\bhybrid\b", re.I),
-    "onsite": re.compile(r"\b(on-?site|in-office|in office|office-based|office based)\b", re.I),
+    "remote": re.compile(r"\b(remote|wfh|work from (?:home|anywhere)|home-based)\b", re.IGNORECASE),
+    "hybrid": re.compile(r"\bhybrid\b", re.IGNORECASE),
+    "onsite": re.compile(r"\b(on-?site|in-office|in office|office-based|office based)\b", re.IGNORECASE),
 }
 EMPLOY_CUES = {
-    "full_time": re.compile(r"\b(full[- ]?time|permanent|fte)\b", re.I),
-    "part_time": re.compile(r"\bpart[- ]?time\b", re.I),
-    "contract": re.compile(r"\b(contract|freelance|contractor)\b", re.I),
-    "internship": re.compile(r"\b(intern|internship)\b", re.I),
+    "full_time": re.compile(r"\b(full[- ]?time|permanent|fte)\b", re.IGNORECASE),
+    "part_time": re.compile(r"\bpart[- ]?time\b", re.IGNORECASE),
+    "contract": re.compile(r"\b(contract|freelance|contractor)\b", re.IGNORECASE),
+    "internship": re.compile(r"\b(intern|internship)\b", re.IGNORECASE),
 }
 
 
 PERIOD_CUES = {
-    "year": re.compile(r"(per year|per annum|/ ?yr|/ ?year|a year|annual|annually|\bp\.a\.|\bpa\b|lpa|lakhs? per annum"
-                       r"|lakh ?/ ?yr|yearly)", re.I),
-    "month": re.compile(r"(per month|/ ?month|/ ?mo\b|a month|monthly)", re.I),
-    "day": re.compile(r"(per day|/ ?day|day rate|daily)", re.I),
-    "hour": re.compile(r"(per hour|/ ?hr|/ ?hour|an hour|hourly)", re.I),
+    "year": re.compile(r"(\bper year|\bper annum|/ ?yr\b|/ ?year\b|\ba year\b|\bannual(?:ly)?\b|\bp\.a\.|\bpa\b|\blpa\b"
+                       r"|\blakhs? per annum|\blakh ?/ ?yr\b|\byearly\b)", re.IGNORECASE),
+    "month": re.compile(r"(\bper month\b|/ ?month\b|/ ?mo\b|\ba month\b|\bmonthly\b)", re.IGNORECASE),
+    "day": re.compile(r"(\bper day\b|/ ?day\b|\bday rate\b|\bdaily\b)", re.IGNORECASE),
+    "hour": re.compile(r"(\bper hour\b|/ ?hr\b|/ ?hour\b|\ban hour\b|\bhourly\b)", re.IGNORECASE),
 }
-_PERIOD_TAIL = re.compile(r"\s*(" + "|".join(p.pattern for p in PERIOD_CUES.values()) + r")\s*$", re.I)
+_PERIOD_TAIL = re.compile(r"\s*(" + "|".join(p.pattern for p in PERIOD_CUES.values()) + r")\s*$", re.IGNORECASE)
 
 
 def salary_ok(text: str, surface: str, period: str) -> bool:
     """Amount part verbatim (ignoring spaces), period signalled anywhere."""
     core = _PERIOD_TAIL.sub("", norm(surface))
-    squash = lambda x: re.sub(r"\s+", "", norm(x))  # noqa: E731
+    squash = lambda x: re.sub(r"\s+", "", norm(x))
     if squash(core) not in squash(text):
         return False
     hits = {k for k, p in PERIOD_CUES.items() if p.search(norm(text))}

@@ -19,7 +19,7 @@ def parse(output: str) -> tuple[dict | None, bool, bool]:
     markdown fence (common for prompted models) when parsing, but report it via `strict`.
     """
     s = output.strip()
-    m = re.search(r"```(?:json)?\s*(.*?)```", s, re.S)
+    m = re.search(r"```(?:json)?\s*(.*?)```", s, re.DOTALL)
     if m:
         s = m.group(1).strip()
     if not s.startswith("{"):

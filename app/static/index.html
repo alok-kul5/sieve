@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sieve: messy job posts in, strict JSON out</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="hero">
+  <nav class="bar">
+    <span class="mark"><i></i>Sieve</span>
+    <span class="bar-meta">Qwen2.5-1.5B · QLoRA · GGUF q4_K_M on Ollama</span>
+    <a class="bar-link" href="https://github.com/alok-kul5/sieve">GitHub ↗</a>
+  </nav>
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow reveal" style="--d:0">Fine-tuning case study</p>
+      <h1 class="reveal" style="--d:1">Messy posts in.<br><em>Strict JSON</em> out.</h1>
+      <p class="lede reveal" style="--d:2">A 1.5B model, fine-tuned on one laptop GPU, that reads recruiter emails, Slack
+        pings and LinkedIn hype and returns one schema-valid record. Same prompt, same weights budget.
+        Here is what the fine-tune changes.</p>
+      <div class="stats reveal" style="--d:3" id="stats">
+        <div class="stat"><b data-k="ft_exact">–</b><span>exact match, fine-tuned</span></div>
+        <div class="stat dim"><b data-k="base_exact">–</b><span>exact match, base prompted</span></div>
+        <div class="stat"><b data-k="ft_valid">–</b><span>schema-valid JSON</span></div>
+      </div>
+    </div>
+    <div class="sieve" aria-hidden="true">
+      <div class="fall" id="fall"></div>
+      <div class="mesh"></div>
+      <div class="sorted" id="sorted"></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="bench">
+    <div class="bench-head">
+      <h2>Try it side by side</h2>
+      <p>Pick a held-out test post (scored against its label) or paste your own.</p>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="input-wrap">
+      <textarea id="text" spellcheck="false" placeholder="Paste a job post…"></textarea>
+      <button id="go" class="go"><span>Extract</span><kbd>Ctrl ↵</kbd></button>
+    </div>
+
+    <div class="duel">
+      <article class="side base" id="side-base">
+        <header><span class="tag">Base · prompted</span><h3>Qwen2.5-1.5B-Instruct</h3><div class="badges"></div></header>
+        <div class="fields"><p class="empty">Waiting for a post.</p></div>
+        <details><summary>Raw output</summary><pre class="raw"></pre></details>
+      </article>
+      <article class="side ft" id="side-ft">
+        <header><span class="tag">Sieve · fine-tuned</span><h3>Qwen2.5-1.5B + LoRA</h3><div class="badges"></div></header>
+        <div class="fields"><p class="empty">Waiting for a post.</p></div>
+        <details><summary>Raw output</summary><pre class="raw"></pre></details>
+      </article>
+    </div>
+  </section>
+
+  <section class="board">
+    <h2>Held-out test set</h2>
+    <p class="sub" id="board-sub">Loading results…</p>
+    <div class="table-wrap"><table id="board"></table></div>
+  </section>
+</main>
+<footer class="foot">Built with transformers, peft, bitsandbytes, llama.cpp and Ollama. All local, all free.</footer>
+<script src="/static/app.js"></script>
+</body>
+</html>

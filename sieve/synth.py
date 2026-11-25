@@ -303,6 +303,9 @@ def sample_spec(rng: random.Random) -> Spec:
     k = rng.randint(2, 6)
     skills = rng.sample(r["skills"], k=min(k, len(r["skills"])))
     skill_s = [rng.choice(SKILLS[s]) for s in skills]
+    for canon, forms in SKILLS.items():  # a title like "Flutter Developer" names a skill: label it too
+        if canon not in skills and any(f in title.split() for f in forms):
+            skills.append(canon)
 
     label = {
         "title": title,

@@ -17,7 +17,7 @@ from pathlib import Path
 
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
 
-from .synth import sample_spec, writer_prompt  # noqa: E402
+from .synth import sample_spec, writer_prompt
 
 
 def ollama_writer(model: str):

@@ -15,13 +15,12 @@ from pathlib import Path
 
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
 
-import torch  # noqa: E402
-from peft import LoraConfig, get_peft_model  # noqa: E402
-from transformers import (AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Trainer,  # noqa: E402
-                          TrainingArguments)
+import torch
+from peft import LoraConfig, get_peft_model
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Trainer, TrainingArguments
 
-from .prompts import messages  # noqa: E402
-from .schema import dumps  # noqa: E402
+from .prompts import messages
+from .schema import dumps
 
 BASE = "models/Qwen2.5-1.5B-Instruct"
 TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]

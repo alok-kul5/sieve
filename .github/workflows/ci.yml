@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install (no torch, no GPU)
+        run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check sieve app tests
+      - name: Unit tests
+        run: pytest -q
+      - name: Data pipeline on a tiny mock
+        run: |
+          python scripts/mock_raw.py --out /tmp/raw.jsonl
+          mkdir -p /tmp/data
+          python -m sieve.clean --raw /tmp/raw.jsonl --out /tmp/data
+          test -s /tmp/data/train.jsonl && test -s /tmp/data/test.jsonl
+      - name: Eval harness on a mock model
+        run: python -m sieve.evaluate --backend mock --name mock --test tests/fixtures/mini_test.jsonl --train tests/fixtures/mini_test.jsonl --out /tmp/results
