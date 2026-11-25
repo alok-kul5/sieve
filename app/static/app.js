@@ -15,7 +15,7 @@ function heroLoop() {
     const f = document.createElement("span");
     f.className = "frag";
     f.textContent = FRAGS[i++ % FRAGS.length];
-    f.style.left = (5 + Math.random() * 70) + "%";
+    f.style.left = (4 + Math.random() * 46) + "%";
     f.style.animationDuration = (2.2 + Math.random() * 1.6) + "s";
     fall.appendChild(f);
     f.addEventListener("animationend", () => f.remove());
