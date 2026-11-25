@@ -1,0 +1,29 @@
+{
+  "name": "gguf-f16",
+  "backend": "ollama",
+  "mode": "zero",
+  "adapter": null,
+  "model": "sieve:f16",
+  "n": 199,
+  "json_valid": 1.0,
+  "schema_valid": 0.9949748743718593,
+  "exact_match": 0.9195979899497487,
+  "fact_precision": 0.9957561728395061,
+  "fact_recall": 0.9934565050038491,
+  "fact_f1": 0.9946050096339113,
+  "field_accuracy": {
+    "title": 0.9849246231155779,
+    "company": 0.9949748743718593,
+    "location": 1.0,
+    "work_mode": 0.9899497487437185,
+    "employment_type": 1.0,
+    "seniority": 0.9899497487437185,
+    "salary": 1.0,
+    "experience_years_min": 1.0,
+    "skills": 0.949748743718593
+  },
+  "latency_ms_p50": 3255.3,
+  "latency_ms_p95": 3371.1,
+  "throughput_per_s": 0.31,
+  "peak_vram_gb": 3.05
+}

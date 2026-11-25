@@ -1,0 +1,29 @@
+{
+  "name": "qwen7b-few",
+  "backend": "ollama",
+  "mode": "few",
+  "adapter": null,
+  "model": "qwen2.5:7b",
+  "n": 199,
+  "json_valid": 1.0,
+  "schema_valid": 0.8944723618090452,
+  "exact_match": 0.2864321608040201,
+  "fact_precision": 0.9194041252864782,
+  "fact_recall": 0.926481909160893,
+  "fact_f1": 0.9229294478527607,
+  "field_accuracy": {
+    "title": 0.9849246231155779,
+    "company": 0.964824120603015,
+    "location": 1.0,
+    "work_mode": 0.8743718592964824,
+    "employment_type": 0.8693467336683417,
+    "seniority": 0.7939698492462312,
+    "salary": 0.9195979899497487,
+    "experience_years_min": 1.0,
+    "skills": 0.5527638190954773
+  },
+  "latency_ms_p50": 3845.6,
+  "latency_ms_p95": 4389.6,
+  "throughput_per_s": 0.26,
+  "peak_vram_gb": 4.43
+}

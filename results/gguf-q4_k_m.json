@@ -1,0 +1,29 @@
+{
+  "name": "gguf-q4_k_m",
+  "backend": "ollama",
+  "mode": "zero",
+  "adapter": null,
+  "model": "sieve:q4_k_m",
+  "n": 199,
+  "json_valid": 1.0,
+  "schema_valid": 0.9949748743718593,
+  "exact_match": 0.9045226130653267,
+  "fact_precision": 0.9953632148377125,
+  "fact_recall": 0.99153194765204,
+  "fact_f1": 0.9934438873891246,
+  "field_accuracy": {
+    "title": 0.9849246231155779,
+    "company": 0.9748743718592965,
+    "location": 1.0,
+    "work_mode": 0.9899497487437185,
+    "employment_type": 1.0,
+    "seniority": 0.9899497487437185,
+    "salary": 0.9949748743718593,
+    "experience_years_min": 1.0,
+    "skills": 0.9547738693467337
+  },
+  "latency_ms_p50": 2644.7,
+  "latency_ms_p95": 2711.3,
+  "throughput_per_s": 0.38,
+  "peak_vram_gb": 1.09
+}
