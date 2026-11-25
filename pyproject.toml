@@ -1,0 +1,16 @@
+[project]
+name = "sieve"
+version = "0.1.0"
+description = "QLoRA fine-tune of Qwen2.5-1.5B for strict-JSON job post extraction, with an eval harness and a GGUF/Ollama deploy path"
+requires-python = ">=3.10"
+dependencies = ["jsonschema>=4", "requests>=2", "fastapi>=0.110", "uvicorn>=0.29", "httpx>=0.27"]
+
+[project.optional-dependencies]
+train = ["torch>=2.7", "transformers>=4.46", "peft>=0.13", "bitsandbytes>=0.45", "accelerate>=1.0", "tensorboard"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
