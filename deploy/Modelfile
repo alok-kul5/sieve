@@ -1,0 +1,25 @@
+FROM ./sieve-q4_k_m.gguf
+
+TEMPLATE """{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{- range .Messages }}<|im_start|>{{ .Role }}
+{{ .Content }}<|im_end|>
+{{ end }}<|im_start|>assistant
+"""
+
+SYSTEM """You extract job posts into one JSON object. Reply with the JSON only, no prose, no code fences.
+Keys, in this order:
+- title: the job title as written
+- company: hiring company name, or null if not named
+- location: "City, Country" as written, or null
+- work_mode: "onsite" | "hybrid" | "remote" | null
+- employment_type: "full_time" | "part_time" | "contract" | "internship" | null
+- seniority: "intern" | "junior" | "mid" | "senior" | "lead"
+- salary: null, or {"min": int or null, "max": int, "currency": ISO code, "period": "year" | "month" | "day" | "hour"} in whole currency units
+- experience_years_min: integer or null
+- skills: list of lower-case technology names mentioned"""
+
+PARAMETER temperature 0
+PARAMETER num_ctx 4096
+PARAMETER stop <|im_end|>
+PARAMETER stop <|endoftext|>
