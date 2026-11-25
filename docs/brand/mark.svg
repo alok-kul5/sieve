@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Sieve">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1626a8"/><stop offset="1" stop-color="#0d1670"/></linearGradient></defs>
+  <rect width="128" height="128" rx="30" fill="url(#g)"/>
+  <path d="M28 40h72L72 76v22l-16 8V76z" fill="none" stroke="#f5efe3" stroke-width="8" stroke-linejoin="round"/>
+  <g fill="#ff6a2b"><circle cx="44" cy="28" r="5"/><circle cx="62" cy="22" r="5"/><circle cx="82" cy="28" r="5"/></g>
+</svg>
