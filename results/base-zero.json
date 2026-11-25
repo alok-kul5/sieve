@@ -1,0 +1,29 @@
+{
+  "name": "base-zero",
+  "backend": "hf",
+  "mode": "zero",
+  "adapter": null,
+  "model": null,
+  "n": 199,
+  "json_valid": 1.0,
+  "schema_valid": 0.5276381909547738,
+  "exact_match": 0.12060301507537688,
+  "fact_precision": 0.8303769401330376,
+  "fact_recall": 0.8648960739030023,
+  "fact_f1": 0.8472850678733032,
+  "field_accuracy": {
+    "title": 0.9748743718592965,
+    "company": 0.8341708542713567,
+    "location": 0.9748743718592965,
+    "work_mode": 0.8241206030150754,
+    "employment_type": 0.7889447236180904,
+    "seniority": 0.5527638190954773,
+    "salary": 0.592964824120603,
+    "experience_years_min": 0.9849246231155779,
+    "skills": 0.4723618090452261
+  },
+  "latency_ms_p50": 4375.1,
+  "latency_ms_p95": 4844.1,
+  "throughput_per_s": 1.39,
+  "peak_vram_gb": 3.31
+}

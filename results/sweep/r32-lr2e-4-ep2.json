@@ -1,0 +1,29 @@
+{
+  "name": "r32-lr2e-4-ep2",
+  "backend": "hf",
+  "mode": "zero",
+  "adapter": "runs/r32-lr2e-4-ep2/adapter",
+  "model": null,
+  "n": 99,
+  "json_valid": 1.0,
+  "schema_valid": 0.98989898989899,
+  "exact_match": 0.9191919191919192,
+  "fact_precision": 0.9962406015037594,
+  "fact_recall": 0.9932533733133433,
+  "fact_f1": 0.9947447447447448,
+  "field_accuracy": {
+    "title": 0.98989898989899,
+    "company": 1.0,
+    "location": 1.0,
+    "work_mode": 1.0,
+    "employment_type": 1.0,
+    "seniority": 1.0,
+    "salary": 0.9797979797979798,
+    "experience_years_min": 1.0,
+    "skills": 0.9494949494949495
+  },
+  "latency_ms_p50": null,
+  "latency_ms_p95": null,
+  "throughput_per_s": 1.26,
+  "peak_vram_gb": 3.3
+}

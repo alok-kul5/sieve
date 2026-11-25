@@ -1,0 +1,29 @@
+{
+  "name": "finetuned",
+  "backend": "hf",
+  "mode": "zero",
+  "adapter": "runs/best/adapter",
+  "model": null,
+  "n": 199,
+  "json_valid": 1.0,
+  "schema_valid": 0.9949748743718593,
+  "exact_match": 0.9195979899497487,
+  "fact_precision": 0.9957578094870806,
+  "fact_recall": 0.993841416474211,
+  "fact_f1": 0.9947986900404547,
+  "field_accuracy": {
+    "title": 0.9849246231155779,
+    "company": 1.0,
+    "location": 1.0,
+    "work_mode": 0.9899497487437185,
+    "employment_type": 0.9949748743718593,
+    "seniority": 0.9899497487437185,
+    "salary": 1.0,
+    "experience_years_min": 1.0,
+    "skills": 0.949748743718593
+  },
+  "latency_ms_p50": 4494.0,
+  "latency_ms_p95": 5604.1,
+  "throughput_per_s": 1.72,
+  "peak_vram_gb": 3.31
+}

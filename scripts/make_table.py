@@ -45,6 +45,25 @@ def main() -> None:
               "|---|" + "---:|" * len(out)]
     for f in fields:
         lines.append(f"| `{f}` | " + " | ".join(pct(r["field_accuracy"][f]) for r in out) + " |")
+    # sweep: every runs/<name>/summary.json that has a val eval in results/sweep/
+    sweep = []
+    for summ in sorted(Path("runs").glob("*/summary.json")):
+        name = summ.parent.name
+        ev_p = Path("results/sweep") / f"{name}.json"
+        if not ev_p.exists():
+            continue
+        tr, ev = json.loads(summ.read_text()), json.loads(ev_p.read_text())
+        sweep.append({"name": name, "rank": tr["rank"], "lr": tr["lr"], "epochs": tr["epochs"],
+                      "val_loss": tr["val_loss"], "exact": ev["exact_match"], "f1": ev["fact_f1"],
+                      "valid": ev["schema_valid"], "params": tr["trainable_params"], "vram": tr["peak_vram_gb"]})
+    sweep.sort(key=lambda r: (r["epochs"], r["exact"]))
+    lines += ["", "| Run | LoRA rank | LR | Epochs | Trainable params | Val loss | Val exact match | Val field F1 "
+              "| Val valid JSON | Peak train VRAM |", "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
+    for r in sweep:
+        lines.append(f"| {r['name']} | {r['rank']} | {r['lr']:.0e} | {r['epochs']:g} | {r['params'] / 1e6:.1f}M "
+                     f"| {r['val_loss']:.4f} | {pct(r['exact'])} | {pct(r['f1'])} | {pct(r['valid'])} "
+                     f"| {r['vram']:.2f} GB |")
+    Path("results/sweep.json").write_text(json.dumps(sweep, indent=2))
     Path("results/table.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 
