@@ -101,14 +101,15 @@ def main() -> None:
         output_dir=str(out / "ckpt"), num_train_epochs=args.epochs, learning_rate=args.lr,
         per_device_train_batch_size=args.batch, per_device_eval_batch_size=args.batch,
         gradient_accumulation_steps=args.accum, lr_scheduler_type="cosine", warmup_ratio=0.05,
-        logging_steps=5, eval_strategy="steps", eval_steps=20, save_strategy="no", bf16=True,
+        logging_steps=5, eval_strategy="steps", eval_steps=20, save_strategy="steps", save_steps=20, save_total_limit=1, bf16=True,
         optim="paged_adamw_8bit", report_to=["tensorboard"], logging_dir=str(out / "tb"),
         dataloader_num_workers=0, seed=42, remove_unused_columns=False,
     )
     trainer = Trainer(model=model, args=targs, train_dataset=train_ds, eval_dataset=val_ds,
                       data_collator=Collator(tok.pad_token_id))
     t0 = time.time()
-    trainer.train()
+    ckpts = sorted((out / "ckpt").glob("checkpoint-*"), key=lambda p: int(p.name.split("-")[1]))
+    trainer.train(resume_from_checkpoint=str(ckpts[-1]) if ckpts else None)  # survive VRAM spikes on a shared GPU
     minutes = (time.time() - t0) / 60
     final = trainer.evaluate()
     model.save_pretrained(out / "adapter")

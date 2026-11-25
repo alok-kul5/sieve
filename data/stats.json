@@ -1,0 +1,116 @@
+{
+  "raw": 1200,
+  "filter": {
+    "kept": 998,
+    "missing:salary": 53,
+    "mismatch:work_mode": 33,
+    "missing:location": 24,
+    "length": 20,
+    "missing:title": 17,
+    "missing:skills": 14,
+    "stray:salary": 11,
+    "missing:experience": 9,
+    "missing:company": 9,
+    "mismatch:employment_type": 7,
+    "stray:skills": 2,
+    "stray:work_mode": 2,
+    "stray:experience": 1
+  },
+  "near_duplicates_dropped": 0,
+  "train": {
+    "n": 700,
+    "style": {
+      "whatsapp": 105,
+      "tweet": 100,
+      "agency": 90,
+      "linkedin": 89,
+      "formal": 85,
+      "recruiter_email": 82,
+      "slack": 75,
+      "reddit": 74
+    },
+    "seniority": {
+      "mid": 224,
+      "senior": 186,
+      "junior": 134,
+      "lead": 110,
+      "intern": 46
+    },
+    "has_salary": 512,
+    "currency": {
+      "USD": 138,
+      "INR": 117,
+      "EUR": 114,
+      "GBP": 52,
+      "AUD": 34,
+      "CAD": 34,
+      "SGD": 23
+    },
+    "null_company": 146,
+    "mean_words": 82.0
+  },
+  "val": {
+    "n": 99,
+    "style": {
+      "agency": 18,
+      "slack": 17,
+      "reddit": 15,
+      "recruiter_email": 13,
+      "tweet": 10,
+      "formal": 9,
+      "linkedin": 9,
+      "whatsapp": 8
+    },
+    "seniority": {
+      "mid": 30,
+      "junior": 25,
+      "senior": 24,
+      "lead": 15,
+      "intern": 5
+    },
+    "has_salary": 81,
+    "currency": {
+      "USD": 22,
+      "INR": 19,
+      "GBP": 15,
+      "EUR": 15,
+      "AUD": 5,
+      "CAD": 3,
+      "SGD": 2
+    },
+    "null_company": 22,
+    "mean_words": 78.0
+  },
+  "test": {
+    "n": 199,
+    "style": {
+      "whatsapp": 32,
+      "tweet": 32,
+      "linkedin": 28,
+      "slack": 25,
+      "agency": 21,
+      "recruiter_email": 21,
+      "reddit": 21,
+      "formal": 19
+    },
+    "seniority": {
+      "senior": 64,
+      "mid": 56,
+      "junior": 36,
+      "lead": 27,
+      "intern": 16
+    },
+    "has_salary": 153,
+    "currency": {
+      "INR": 42,
+      "EUR": 37,
+      "USD": 28,
+      "GBP": 19,
+      "AUD": 14,
+      "CAD": 9,
+      "SGD": 4
+    },
+    "null_company": 35,
+    "mean_words": 85.7
+  }
+}
